@@ -10,11 +10,10 @@ class Retrier {
                      acceptResult: A => Boolean,
                      retries: List[FiniteDuration]): A = {
     val result = block.apply()
-    val accept = if (result != null) acceptResult.apply(result) else false
-    if (accept || retries.isEmpty)
+    if (acceptResult.apply(result) || retries.isEmpty)
       result
     else {
-      if (retries.nonEmpty) Thread.sleep(retries.head.toMillis)
+      Thread.sleep(retries.head.toMillis)
       retry(block, acceptResult, retries.tail)
     }
   }

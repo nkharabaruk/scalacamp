@@ -15,7 +15,7 @@ class RetrierTest extends FlatSpec with Matchers {
     ) shouldEqual 2
   }
 
-  "The retry method call with empty retries" should "does not fail and return first valid result" in {
+  "The retry method call with empty retries" should "return first result" in {
     retrier.retry[Int](
       block = () => 1 + 2,
       acceptResult = res => res % 2 == 0,
@@ -23,67 +23,25 @@ class RetrierTest extends FlatSpec with Matchers {
     ) shouldEqual 3
   }
 
-  "The retry method call" should "do not receive accept edge and return last invalid result" in {
-    var i = 0
+  "The retry method call" should "call 4 times and return last invalid result" in {
+    var counter = 0
     retrier.retry[Int](
-      block = () => { i = i + 1; i },
+      block = () => { counter = counter + 1; counter },
       acceptResult = res => res > 10,
       retries = List[FiniteDuration](0.seconds, 1.seconds, 2.seconds)
     ) shouldEqual 4
+    counter shouldEqual 4
   }
 
-  "The retry method call with always false accept" should "return last invalid result" in {
-    var i = 0
+  "The retry method call" should "wait 3 seconds and return last invalid result" in {
+    val start = System.currentTimeMillis()
     retrier.retry[Int](
-      block = () => { i = i + 1; i },
+      block = () => 1 + 1,
       acceptResult = res => false,
       retries = List[FiniteDuration](0.seconds, 1.seconds, 2.seconds)
-    ) shouldEqual 4
-  }
-
-  "The retry method call" should "throw exception" in {
-    assertThrows[Exception](
-      retrier.retry[Int](
-        block = () => throw new Exception,
-        acceptResult = res => res % 2 == 0,
-        retries = List[FiniteDuration](0.seconds, 1.seconds, 2.seconds)
-      )
-    )
-  }
-
-  "The retry method call with string" should "return valid result" in {
-    retrier.retry[String](
-      block = () => "not empty string",
-      acceptResult = res => res.isEmpty,
-      retries = List[FiniteDuration](0.seconds, 1.seconds, 2.seconds)
-    ) shouldEqual "not empty string"
-  }
-
-  "The retry method call with null string" should "return null" in {
-    retrier.retry[String](
-      block = () => null,
-      acceptResult = res => res.isEmpty,
-      retries = List[FiniteDuration](0.seconds, 1.seconds, 2.seconds)
-    ) shouldEqual null
-  }
-
-  "The retry method call with null block" should "return throw IllegalArgumentException" in {
-    assertThrows[Exception](
-      retrier.retry[String](
-        null,
-        acceptResult = res => res.isEmpty,
-        retries = List[FiniteDuration](0.seconds, 1.seconds, 2.seconds)
-      )
-    )
-  }
-
-  "The retry method call with null acceptResult" should "return throw IllegalArgumentException" in {
-    assertThrows[Exception](
-      retrier.retry[String](
-        block = () => "not empty string",
-        null,
-        retries = List[FiniteDuration](0.seconds, 1.seconds, 2.seconds)
-      )
-    )
+    ) shouldEqual 2
+    val end = System.currentTimeMillis()
+    val duration = ( end - start ) / 1000
+    duration shouldEqual 3
   }
 }
