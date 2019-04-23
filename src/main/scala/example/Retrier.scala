@@ -1,7 +1,7 @@
 package example
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 import scala.annotation.tailrec
 import scala.concurrent.duration._
 
