@@ -21,7 +21,15 @@ class ValidatorTest extends FlatSpec with Matchers {
     234 validate lessThan(235) shouldEqual Right(234)
     234 validate lessThan(10) shouldEqual Left(lessErrorMessage)
 
-//    2 validate (positiveInt and lessThan(10)) shouldEqual Right(2)
+    2 validate (positiveInt and lessThan(10)) shouldEqual Right(2)
+    0 validate (positiveInt and lessThan(10)) shouldEqual Left(positiveErrorMessage)
+    11 validate (positiveInt and lessThan(10)) shouldEqual Left(lessErrorMessage)
+    0 validate (positiveInt and lessThan(-1)) shouldEqual Left(positiveErrorMessage + lessErrorMessage)
+
+    2 validate (positiveInt or lessThan(10)) shouldEqual Right(2)
+    0 validate (positiveInt or lessThan(10)) shouldEqual Right(0)
+    11 validate (positiveInt or lessThan(10)) shouldEqual Right(11)
+    0 validate (positiveInt or lessThan(-1)) shouldEqual Left(positiveErrorMessage + lessErrorMessage)
   }
 
   "The string validate method calls" should "return valid result" in {

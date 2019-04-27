@@ -18,12 +18,10 @@ trait Validator[T] {
     * @return the Right(value) only in case this validator and <code>other</code> validator returns valid value,
     *         otherwise Left with error messages from both validators.
     */
-  def and(other: Validator[T]): Validator[T] = new Validator[T] {
-    override def validate(value: T): Either[String, T] = {
-      val a = this.validate(value)
-      val b = other.validate(value)
-      Either.cond(a.isRight && b.isRight, value, a.left.getOrElse("") + b.left.getOrElse(""))
-    }
+  def and(other: Validator[T]): Validator[T] = (value: T) => {
+    val first = this.validate(value)
+    val second = other.validate(value)
+    Either.cond(first.isRight && second.isRight, value, first.left.getOrElse("") + second.left.getOrElse(""))
   }
 
   /**
@@ -32,28 +30,20 @@ trait Validator[T] {
     * @return the Right(value) only in case either this validator or <code>other</code> validator returns valid value,
     *         otherwise Left with error messages from the failed validator or from both if both failed.
     */
-  def or(other: Validator[T]): Validator[T] = new Validator[T] {
-    override def validate(value: T): Either[String, T] = {
-      val a = this.validate(value)
-      val b = other.validate(value)
-      Either.cond(a.isRight || b.isRight, value, a.left.getOrElse("") + b.left.getOrElse(""))
-    }
+  def or(other: Validator[T]): Validator[T] = (value: T) => {
+    val first = this.validate(value)
+    val second = other.validate(value)
+    Either.cond(first.isRight || second.isRight, value, first.left.getOrElse("") + second.left.getOrElse(""))
   }
 }
 
 
 object Validator {
-  val positiveInt : Validator[Int] = new Validator[Int] {
-    override def validate(t: Int): Either[String, Int] = Either.cond(t > 0, t, "Value should be positive. ")
-  }
+  val positiveInt : Validator[Int] = (t: Int) => Either.cond(t > 0, t, "Value should be positive. ")
 
-  def lessThan(n: Int): Validator[Int] = new Validator[Int] {
-    override def validate(t: Int): Either[String, Int] = Either.cond(t < n, t, "Value should be less than given. ")
-  }
+  def lessThan(n: Int): Validator[Int] = (t: Int) => Either.cond(t < n, t, "Value should be less than given. ")
 
-  val nonEmpty : Validator[String] = new Validator[String] {
-    override def validate(t: String): Either[String, String] = Either.cond(t.nonEmpty, t, "Value should not be empty. ")
-  }
+  val nonEmpty : Validator[String] = (t: String) => Either.cond(t.nonEmpty, t, "Value should not be empty. ")
 
   val isPersonValid = new Validator[Person] {
     // Returns valid only when the name is not empty and age is in range [1-99].
