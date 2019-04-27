@@ -62,15 +62,15 @@ object Validator {
   }
 
   implicit class IntImprovements(val n: Int) {
-    def validate(t:Validator[Int]): Either[String, Int] = t.validate(n)
+    def validate(implicit t:Validator[Int] = Validator.positiveInt): Either[String, Int] = t.validate(n)
   }
 
   implicit class StringImprovements(val n: String) {
-    def validate(t:Validator[String]): Either[String, String] = t.validate(n)
+    def validate(implicit t:Validator[String] = Validator.nonEmpty): Either[String, String] = t.validate(n)
   }
 
   implicit class PersonImprovements(val n: Person) {
-    def validate(t:Validator[Person]): Either[String, Person] = t.validate(n)
+    def validate(implicit t:Validator[Person] = Validator.isPersonValid): Either[String, Person] = t.validate(n)
   }
 }
 
@@ -91,9 +91,11 @@ object ImplicitValidApp {
   import Validator._
 
   // uncomment next code and make it compilable and workable
-  //Person(name = "John", age = 25) validate
-  //"asdasd" validate
-  //234.validate
+  Person(name = "John", age = 25) validate
+
+  "asdasd" validate
+
+  234.validate
 }
 
 case class Person(name: String, age: Int)
