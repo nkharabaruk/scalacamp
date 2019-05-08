@@ -1,8 +1,9 @@
 package example
 
+import cats.Id
 import org.scalatest.{FlatSpec, Matchers}
-import scala.concurrent.duration._
 import scala.concurrent.Await
+import scala.concurrent.duration._
 
 class ServiceTest extends FlatSpec with Matchers {
 
@@ -162,5 +163,71 @@ class ServiceTest extends FlatSpec with Matchers {
     val oneMoreIotDeviceId = 3
     // iot device with same user and serial number can be registered
     Await.result(iotDeviceRepositoryFuture.registerDevice(userId, serialNumber), 2.seconds).id shouldEqual oneMoreIotDeviceId
+  }
+
+  "The user service id method calls" should "return valid result" in {
+    val userRepositoryId = new UserRepositoryId()
+    val userService = new UserService[Id](userRepositoryId)
+
+    val username = "John Smith"
+    val userId = 1
+
+    val registeredUser = userService.registerUser(username)
+    registeredUser.isRight shouldEqual true
+    val existingUser = registeredUser.right.get
+    existingUser.id shouldEqual userId
+    existingUser.username shouldEqual username
+
+    val nonRegisteredUser = userService.registerUser(username)
+    nonRegisteredUser.isLeft shouldEqual true
+    nonRegisteredUser shouldEqual Left(s"example.User $existingUser already exists.")
+
+    val retrievedByUsername = userService.getByUsername(username).get
+    retrievedByUsername.id shouldEqual userId
+    retrievedByUsername.username shouldEqual username
+
+    val retrievedById = userService.getById(userId).get
+    retrievedById.id shouldEqual userId
+    retrievedById.username shouldEqual username
+
+    userService.getByUsername("Random user name") shouldEqual Option.empty
+    userService.getById(2) shouldEqual Option.empty
+  }
+
+  "The iot device service id method calls" should "return valid result" in {
+    val iotDeviceRepositoryId = new IotDeviceRepositoryId()
+    val userRepositoryId = new UserRepositoryId()
+    val iotDeviceService = new IotDeviceService[Id](iotDeviceRepositoryId, userRepositoryId)
+    val userService = new UserService[Id](userRepositoryId)
+
+    val username = "John Smith"
+    val userId = 1
+    val iotDeviceId = 1
+    val serialNumber = "EA2700"
+
+    val nonRegisteredDevice = iotDeviceService.registerDevice(userId, serialNumber)
+    nonRegisteredDevice.isLeft shouldEqual true
+    nonRegisteredDevice shouldEqual Left("User doesn't exist or device serial number is already present.")
+
+    val registeredUser = userService.registerUser(username)
+    registeredUser.isRight shouldEqual true
+    val existingUser = registeredUser.right.get
+    existingUser.id shouldEqual userId
+    existingUser.username shouldEqual username
+
+    val registeredDevice = iotDeviceService.registerDevice(userId, serialNumber)
+    registeredDevice.isRight shouldEqual true
+    val existingDevice = registeredDevice.right.get
+    existingDevice.id shouldEqual iotDeviceId
+    existingDevice.sn shouldEqual serialNumber
+    existingDevice.userId shouldEqual userId
+
+    val nonRegisteredDevice1 = iotDeviceService.registerDevice(userId, serialNumber)
+    nonRegisteredDevice1.isLeft shouldEqual true
+    nonRegisteredDevice1 shouldEqual Left("User doesn't exist or device serial number is already present.")
+
+    val nonRegisteredDevice2 = iotDeviceService.registerDevice(2, serialNumber)
+    nonRegisteredDevice2.isLeft shouldEqual true
+    nonRegisteredDevice2 shouldEqual Left("User doesn't exist or device serial number is already present.")
   }
 }

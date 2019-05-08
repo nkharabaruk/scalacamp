@@ -119,7 +119,7 @@ class IotDeviceService[F[_]](repository: IotDeviceRepository[F],
         userOption <- userRepository.getById(userId)
         deviceOption <- repository.getBySn(sn)
       } yield {
-        (if (userOption.isDefined && deviceOption.isEmpty)
+        (if (userOption.nonEmpty && deviceOption.isEmpty)
           repository.registerDevice(userId, sn).map(Right(_))
         else
           monad.pure(Left("User doesn't exist or device serial number is already present.")))
