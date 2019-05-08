@@ -1,9 +1,11 @@
 package example
 
-import cats.Id
 import org.scalatest.{FlatSpec, Matchers}
-import scala.concurrent.Await
+import cats.implicits.catsStdInstancesForFuture
+import cats.Id
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 
 class ServiceTest extends FlatSpec with Matchers {
 
@@ -194,6 +196,35 @@ class ServiceTest extends FlatSpec with Matchers {
     userService.getById(2) shouldEqual Option.empty
   }
 
+  "The user service future method calls" should "return valid result" in {
+    val userRepositoryFuture = new UserRepositoryFuture()
+    val userService = new UserService[Future](userRepositoryFuture)
+
+    val username = "John Smith"
+    val userId = 1
+
+    val registeredUser = Await.result(userService.registerUser(username), 2.seconds)
+    registeredUser.isRight shouldEqual true
+    val existingUser = registeredUser.right.get
+    existingUser.id shouldEqual userId
+    existingUser.username shouldEqual username
+
+    val nonRegisteredUser = Await.result(userService.registerUser(username), 2.seconds)
+    nonRegisteredUser.isLeft shouldEqual true
+    nonRegisteredUser shouldEqual Left(s"example.User $existingUser already exists.")
+
+    val retrievedByUsername = Await.result(userService.getByUsername(username), 2.seconds).get
+    retrievedByUsername.id shouldEqual userId
+    retrievedByUsername.username shouldEqual username
+
+    val retrievedById = Await.result(userService.getById(userId), 2.seconds).get
+    retrievedById.id shouldEqual userId
+    retrievedById.username shouldEqual username
+
+    Await.result(userService.getByUsername("Random user name"), 2.seconds) shouldEqual Option.empty
+    Await.result(userService.getById(2), 2.seconds) shouldEqual Option.empty
+  }
+
   "The iot device service id method calls" should "return valid result" in {
     val iotDeviceRepositoryId = new IotDeviceRepositoryId()
     val userRepositoryId = new UserRepositoryId()
@@ -227,6 +258,43 @@ class ServiceTest extends FlatSpec with Matchers {
     nonRegisteredDevice1 shouldEqual Left("User doesn't exist or device serial number is already present.")
 
     val nonRegisteredDevice2 = iotDeviceService.registerDevice(2, serialNumber)
+    nonRegisteredDevice2.isLeft shouldEqual true
+    nonRegisteredDevice2 shouldEqual Left("User doesn't exist or device serial number is already present.")
+  }
+
+  "The iot device service future method calls" should "return valid result" in {
+    val iotDeviceRepositoryFuture = new IotDeviceRepositoryFuture()
+    val userRepositoryFuture = new UserRepositoryFuture()
+    val iotDeviceService = new IotDeviceService[Future](iotDeviceRepositoryFuture, userRepositoryFuture)
+    val userService = new UserService[Future](userRepositoryFuture)
+
+    val username = "John Smith"
+    val userId = 1
+    val iotDeviceId = 1
+    val serialNumber = "EA2700"
+
+    val nonRegisteredDevice = Await.result(iotDeviceService.registerDevice(userId, serialNumber), 2.seconds)
+    nonRegisteredDevice.isLeft shouldEqual true
+    nonRegisteredDevice shouldEqual Left("User doesn't exist or device serial number is already present.")
+
+    val registeredUser = Await.result(userService.registerUser(username), 2.seconds)
+    registeredUser.isRight shouldEqual true
+    val existingUser = registeredUser.right.get
+    existingUser.id shouldEqual userId
+    existingUser.username shouldEqual username
+
+    val registeredDevice = Await.result(iotDeviceService.registerDevice(userId, serialNumber), 2.seconds)
+    registeredDevice.isRight shouldEqual true
+    val existingDevice = registeredDevice.right.get
+    existingDevice.id shouldEqual iotDeviceId
+    existingDevice.sn shouldEqual serialNumber
+    existingDevice.userId shouldEqual userId
+
+    val nonRegisteredDevice1 = Await.result(iotDeviceService.registerDevice(userId, serialNumber), 2.seconds)
+    nonRegisteredDevice1.isLeft shouldEqual true
+    nonRegisteredDevice1 shouldEqual Left("User doesn't exist or device serial number is already present.")
+
+    val nonRegisteredDevice2 = Await.result(iotDeviceService.registerDevice(2, serialNumber), 2.seconds)
     nonRegisteredDevice2.isLeft shouldEqual true
     nonRegisteredDevice2 shouldEqual Left("User doesn't exist or device serial number is already present.")
   }
