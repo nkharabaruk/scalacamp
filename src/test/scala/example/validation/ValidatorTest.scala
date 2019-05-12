@@ -1,6 +1,6 @@
-package example
+package example.validation
 
-import example.Validator._
+import example.validation.Validator._
 import org.scalatest.{FlatSpec, Matchers}
 
 class ValidatorTest extends FlatSpec with Matchers {

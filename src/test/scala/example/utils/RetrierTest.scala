@@ -1,9 +1,10 @@
-package example
+package example.utils
 
 import org.scalatest.{FlatSpec, Matchers}
+
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 
 class RetrierTest extends FlatSpec with Matchers {
 
