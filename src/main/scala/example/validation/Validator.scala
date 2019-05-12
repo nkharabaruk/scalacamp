@@ -1,4 +1,4 @@
-package example
+package example.validation
 
 /**
   * Implement validator typeclass that should validate arbitrary value [T].
