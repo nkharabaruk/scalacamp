@@ -4,34 +4,44 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class UserRepositoryIdTest extends FlatSpec with Matchers {
 
-  "The user repository id method calls" should "return valid result" in {
-    val userRepositoryId = new UserRepositoryId()
+  private val userRepositoryId = new UserRepositoryId
+  private val username = "John Smith"
+  private val userId = 1
 
-    val johnUsername = "John Smith"
-    val johnId = 1
+  "Register users" should "return valid results" in {
+    val registeredUser = userRepositoryId.registerUser(username)
+    registeredUser.id shouldEqual userId
+    registeredUser.username shouldEqual username
 
-    val registeredUser = userRepositoryId.registerUser(johnUsername)
-    registeredUser.id shouldEqual johnId
-    registeredUser.username shouldEqual johnUsername
+    val anotherUsername = "Bread Pitt"
+    val registeredUser2 = userRepositoryId.registerUser(anotherUsername)
+    registeredUser2.id shouldEqual 2
+    registeredUser2.username shouldEqual anotherUsername
+  }
 
-    val retrievedByUsername = userRepositoryId.getByUsername(johnUsername).get
-    retrievedByUsername.id shouldEqual johnId
-    retrievedByUsername.username shouldEqual johnUsername
+  "Retrieve user by id" should "return valid result" in {
+    val retrievedById = userRepositoryId.getById(userId).get
+    retrievedById.id shouldEqual userId
+    retrievedById.username shouldEqual username
+  }
 
-    val retrievedById = userRepositoryId.getById(johnId).get
-    retrievedById.id shouldEqual johnId
-    retrievedById.username shouldEqual johnUsername
-
-    val breadUsername = "Bread Pitt"
-    val breadId = 2
-    userRepositoryId.registerUser(breadUsername).id shouldEqual breadId
-
+  "Retrieve user with invalid id" should "return none" in {
     userRepositoryId.getById(3) shouldBe None
+  }
+
+  "Retrieve user by username" should "return valid result" in {
+    val retrievedByUsername = userRepositoryId.getByUsername(username).get
+    retrievedByUsername.id shouldEqual userId
+    retrievedByUsername.username shouldEqual username
+  }
+
+  "Retrieve user with invalid username" should "return none" in {
     userRepositoryId.getByUsername("Random user name") shouldBe None
+  }
 
-    val john2Username = "John Smith"
-    val john2Id = 3
-
-    userRepositoryId.registerUser(john2Username).id shouldEqual john2Id
+  "Register user with the same name" should "return valid result" in {
+    val registeredUser = userRepositoryId.registerUser(username)
+    registeredUser.id shouldEqual 3
+    registeredUser.username shouldEqual username
   }
 }
