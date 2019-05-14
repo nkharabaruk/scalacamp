@@ -8,9 +8,9 @@ class UserRepositoryId extends UserRepository[Id] {
   private var storage: Map[Long, User] = Map()
   private val id = new AtomicLong(0)
 
-  override def registerUser(username: String): Id[User] = {
+  override def registerUser(username: String, address: Option[String], email: String): Id[User] = {
     val userId = id.incrementAndGet()
-    val user = User(userId, username)
+    val user = User(userId, username, address, email)
     storage = storage + (userId -> user)
     user
   }

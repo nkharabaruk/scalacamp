@@ -5,7 +5,7 @@ import org.scalatest.{AsyncFlatSpec, Matchers}
 
 class IotDeviceRepositoryFutureTest extends AsyncFlatSpec with Matchers {
 
-  val iotDeviceRepositoryFuture = new IotDeviceRepositoryFuture()
+  private val iotDeviceRepositoryFuture = new IotDeviceRepositoryFuture()
   private val userId = 1
   private val serialNumber = "EA2700"
   private val iotDeviceId = 1

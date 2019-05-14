@@ -4,28 +4,35 @@ import org.scalatest.{AsyncFlatSpec, Matchers}
 
 class UserRepositoryFutureTest extends AsyncFlatSpec with Matchers {
 
-  val userRepositoryFuture = new UserRepositoryFuture()
+  private val userRepositoryFuture = new UserRepositoryFuture()
+  private val username = "John Smith"
+  private val address = Option("Philadelphia, PA 19101")
+  private val email = "john_smith@gmail.com"
+  private val userId = 1
 
   "Register users" should "return valid results" in {
-    val johnUsername = "John Smith"
-    userRepositoryFuture.registerUser(johnUsername).map { registeredUser =>
-      registeredUser.id shouldEqual 1
-      registeredUser.username shouldEqual johnUsername
+    userRepositoryFuture.registerUser(username, address, email).map { registeredUser =>
+      registeredUser.id shouldEqual userId
+      registeredUser.username shouldEqual username
+      registeredUser.address shouldEqual address
+      registeredUser.email shouldEqual email
     }
 
-    val breadUsername = "Bread Pitt"
-    userRepositoryFuture.registerUser(breadUsername).map { registeredUser =>
+    val anotherUsername = "Bread Pitt"
+    userRepositoryFuture.registerUser(anotherUsername, address, email).map { registeredUser =>
       registeredUser.id shouldEqual 2
-      registeredUser.username shouldEqual breadUsername
+      registeredUser.username shouldEqual anotherUsername
+      registeredUser.address shouldEqual address
+      registeredUser.email shouldEqual email
     }
   }
 
   "Retrieve user by id" should "return valid result" in {
-    val johnUsername = "John Smith"
-    val johnId = 1
-    userRepositoryFuture.getById(johnId).map { retrievedById =>
-      retrievedById.get.id shouldEqual johnId
-      retrievedById.get.username shouldEqual johnUsername
+    userRepositoryFuture.getById(userId).map { retrievedById =>
+      retrievedById.get.id shouldEqual userId
+      retrievedById.get.username shouldEqual username
+      retrievedById.get.address shouldEqual address
+      retrievedById.get.email shouldEqual email
     }
   }
 
@@ -36,11 +43,11 @@ class UserRepositoryFutureTest extends AsyncFlatSpec with Matchers {
   }
 
   "Retrieve user by username" should "return valid result" in {
-    val johnUsername = "John Smith"
-    val johnId = 1
-    userRepositoryFuture.getByUsername(johnUsername).map { retrievedByUsername =>
-      retrievedByUsername.get.id shouldEqual johnId
-      retrievedByUsername.get.username shouldEqual johnUsername
+    userRepositoryFuture.getByUsername(username).map { retrievedByUsername =>
+      retrievedByUsername.get.id shouldEqual userId
+      retrievedByUsername.get.username shouldEqual username
+      retrievedByUsername.get.address shouldEqual address
+      retrievedByUsername.get.email shouldEqual email
     }
   }
 
@@ -51,8 +58,7 @@ class UserRepositoryFutureTest extends AsyncFlatSpec with Matchers {
   }
 
   "Register user with the same name" should "return valid result" in {
-    val username = "John Smith"
-    userRepositoryFuture.registerUser("John Smith").map { registeredWithSameName =>
+    userRepositoryFuture.registerUser(username, address, email).map { registeredWithSameName =>
       registeredWithSameName.id shouldEqual 3
     }
   }

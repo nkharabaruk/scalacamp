@@ -8,9 +8,9 @@ class UserRepositoryFuture(implicit val ec: ExecutionContext) extends UserReposi
   private var storage: Map[Long, User] = Map()
   private val id = new AtomicLong(0)
 
-  override def registerUser(username: String): Future[User] = Future {
+  override def registerUser(username: String, address: Option[String], email: String): Future[User] = Future {
     val userId = id.incrementAndGet()
-    val user = User(userId, username)
+    val user = User(userId, username, address, email)
     storage = storage + (userId -> user)
     user
   }

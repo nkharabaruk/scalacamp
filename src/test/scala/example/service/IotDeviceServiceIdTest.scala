@@ -5,15 +5,17 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class IotDeviceServiceIdTest extends FlatSpec with Matchers {
 
-  val iotDeviceRepositoryId = new IotDeviceRepositoryId()
-  val userRepositoryId = new UserRepositoryId()
-  val iotDeviceService = new IotDeviceServiceId(iotDeviceRepositoryId, userRepositoryId)
-  val userService = new UserServiceId(userRepositoryId)
+  private val iotDeviceRepositoryId = new IotDeviceRepositoryId()
+  private val userRepositoryId = new UserRepositoryId()
+  private val iotDeviceService = new IotDeviceServiceId(iotDeviceRepositoryId, userRepositoryId)
+  private val userService = new UserServiceId(userRepositoryId)
 
-  val username = "John Smith"
-  val userId = 1
-  val iotDeviceId = 1
-  val serialNumber = "EA2700"
+  private val username = "John Smith"
+  private val address = Option("Philadelphia, PA 19101")
+  private val email = "john_smith@gmail.com"
+  private val userId = 1
+  private val iotDeviceId = 1
+  private val serialNumber = "EA2700"
 
   "Register iot device with not existed user" should "return error message" in {
     val nonRegisteredDevice = iotDeviceService.registerDevice(userId, serialNumber)
@@ -22,11 +24,13 @@ class IotDeviceServiceIdTest extends FlatSpec with Matchers {
   }
 
   "Register iot device" should "return valid result" in {
-    val registeredUser = userService.registerUser(username)
+    val registeredUser = userService.registerUser(username, address, email)
     registeredUser.isRight shouldEqual true
     val existingUser = registeredUser.right.get
     existingUser.id shouldEqual userId
     existingUser.username shouldEqual username
+    existingUser.address shouldEqual address
+    existingUser.email shouldEqual email
 
     val registeredDevice = iotDeviceService.registerDevice(userId, serialNumber)
     registeredDevice.isRight shouldEqual true

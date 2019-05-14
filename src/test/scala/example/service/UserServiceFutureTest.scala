@@ -6,24 +6,28 @@ import org.scalatest.{AsyncFlatSpec, Matchers}
 
 class UserServiceFutureTest extends AsyncFlatSpec with Matchers {
 
-  val userRepositoryFuture = new UserRepositoryFuture()
-  val userService = new UserServiceFuture(userRepositoryFuture)
-  val username = "John Smith"
-  val userId = 1
+  private val userRepositoryFuture = new UserRepositoryFuture()
+  private val userService = new UserServiceFuture(userRepositoryFuture)
+  private val username = "John Smith"
+  private val address = Option("Philadelphia, PA 19101")
+  private val email = "john_smith@gmail.com"
+  private val userId = 1
 
   "Register user" should "return valid result" in {
-    userService.registerUser(username).map { registeredUser =>
+    userService.registerUser(username, address, email).map { registeredUser =>
       registeredUser.isRight shouldEqual true
       val existingUser = registeredUser.right.get
       existingUser.id shouldEqual userId
       existingUser.username shouldEqual username
+      existingUser.address shouldEqual address
+      existingUser.email shouldEqual email
     }
   }
 
   "Register already existed user" should "return error message" in {
-    userService.registerUser(username).map { nonRegisteredUser =>
+    userService.registerUser(username, address, email).map { nonRegisteredUser =>
     nonRegisteredUser.isLeft shouldEqual true
-    nonRegisteredUser shouldEqual Left(s"example.User ${User(userId, username)} already exists.")
+    nonRegisteredUser shouldEqual Left(s"example.User ${User(userId, username, address, email)} already exists.")
     }
   }
 
@@ -31,6 +35,8 @@ class UserServiceFutureTest extends AsyncFlatSpec with Matchers {
     userService.getByUsername(username).map { retrievedByUsername =>
       retrievedByUsername.get.id shouldEqual userId
       retrievedByUsername.get.username shouldEqual username
+      retrievedByUsername.get.address shouldEqual address
+      retrievedByUsername.get.email shouldEqual email
     }
   }
 
@@ -44,6 +50,8 @@ class UserServiceFutureTest extends AsyncFlatSpec with Matchers {
     userService.getById(userId).map { retrievedById =>
       retrievedById.get.id shouldEqual userId
       retrievedById.get.username shouldEqual username
+      retrievedById.get.address shouldEqual address
+      retrievedById.get.email shouldEqual email
     }
   }
 
