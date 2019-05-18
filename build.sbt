@@ -9,5 +9,10 @@ lazy val root = (project in file("."))
   .settings(
     name := "scalacamp",
     libraryDependencies += scalaTest % Test,
-    libraryDependencies += cats
+    libraryDependencies += cats,
+    libraryDependencies += akkaActor,
+    libraryDependencies += akkaSteam,
+    libraryDependencies += akkaHttp,
+    libraryDependencies += slick,
+    libraryDependencies += h2
   )
