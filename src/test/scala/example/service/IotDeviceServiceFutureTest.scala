@@ -2,11 +2,15 @@ package example.service
 
 import example.repository.{IotDeviceRepositoryFuture, UserRepositoryFuture}
 import org.scalatest.{AsyncFlatSpec, Matchers}
+import slick.jdbc.H2Profile.api._
 
 class IotDeviceServiceFutureTest extends AsyncFlatSpec with Matchers {
 
-  private val iotDeviceRepositoryFuture = new IotDeviceRepositoryFuture()
-  private val userRepositoryFuture = new UserRepositoryFuture()
+  private val db = Database.forConfig("scalacamp")
+  private val iotDeviceRepositoryFuture = new IotDeviceRepositoryFuture(db)
+  db.run(iotDeviceRepositoryFuture.iotDevices.schema.create)
+  private val userRepositoryFuture = new UserRepositoryFuture(db)
+  db.run(userRepositoryFuture.users.schema.create)
   private val iotDeviceService = new IotDeviceServiceFuture(iotDeviceRepositoryFuture, userRepositoryFuture)
   private val userService = new UserServiceFuture(userRepositoryFuture)
 

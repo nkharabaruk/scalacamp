@@ -1,20 +1,32 @@
 package example.repository
 
 import java.util.concurrent.atomic.AtomicLong
+import scala.concurrent.duration._
 import cats.Id
 import example.domain.IotDevice
+import example.schema.IotDeviceTable
+import slick.jdbc.H2Profile.api._
+import slick.lifted.TableQuery
+import scala.concurrent.Await
 
-class IotDeviceRepositoryId extends IotDeviceRepository[Id] {
-  private var storage: Map[Long, IotDevice] = Map()
+class IotDeviceRepositoryId(db: Database) extends IotDeviceRepository[Id] {
+
+  lazy val iotDevices = TableQuery[IotDeviceTable]
   private val id = new AtomicLong(0)
 
   override def registerDevice(userId: Long, serialNumber: String): Id[IotDevice] = {
     val deviceId = id.incrementAndGet()
     val iotDevice = IotDevice(deviceId, userId, serialNumber)
-    storage = storage + (deviceId -> iotDevice)
+    db.run(iotDevices.insertOrUpdate(iotDevice))
     iotDevice
   }
-  override def getById(id: Long): Id[Option[IotDevice]] = storage.get(id)
-  override def getBySn(sn: String): Id[Option[IotDevice]] = storage.values.find(device => device.sn == sn)
-  override def getByUser(userId: Long): Id[Seq[IotDevice]] = storage.values.filter(device => device.userId == userId).toSeq
+  override def getById(id: Long): Id[Option[IotDevice]] = {
+    Await.result(db.run(iotDevices.filter(_.id === id).result.headOption), 2.seconds)
+  }
+  override def getBySn(sn: String): Id[Option[IotDevice]] = {
+    Await.result(db.run(iotDevices.filter(_.serialNumber === sn).result.headOption), 2.seconds)
+  }
+  override def getByUser(userId: Long): Id[Seq[IotDevice]] = {
+    Await.result(db.run(iotDevices.filter(_.userId === userId).result), 2.seconds)
+  }
 }

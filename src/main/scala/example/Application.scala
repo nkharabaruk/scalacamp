@@ -24,7 +24,7 @@ package example
   * POST /user
   * Payload:
   * - username: String (should be non-empty and contain only alphanumeric characters, validate it)
-  * - adress: Option[String] (may be empty)
+  * - address: Option[String] (may be empty)
   * - email: String (required)
   * Response:
   * - userId: Long

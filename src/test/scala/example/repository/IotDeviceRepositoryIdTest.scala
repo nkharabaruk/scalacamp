@@ -2,10 +2,13 @@ package example.repository
 
 import example.domain.IotDevice
 import org.scalatest.{FlatSpec, Matchers}
+import slick.jdbc.H2Profile.api._
 
 class IotDeviceRepositoryIdTest extends FlatSpec with Matchers {
 
-  private val iotDeviceRepositoryId = new IotDeviceRepositoryId()
+  private val db = Database.forConfig("scalacamp")
+  private val iotDeviceRepositoryId = new IotDeviceRepositoryId(db)
+  db.run(iotDeviceRepositoryId.iotDevices.schema.create)
   private val userId = 1
   private val serialNumber = "EA2700"
   private val iotDeviceId = 1

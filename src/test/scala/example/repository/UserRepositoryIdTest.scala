@@ -1,10 +1,13 @@
 package example.repository
 
 import org.scalatest.{FlatSpec, Matchers}
+import slick.jdbc.H2Profile.api._
 
 class UserRepositoryIdTest extends FlatSpec with Matchers {
 
-  private val userRepositoryId = new UserRepositoryId
+  private val db = Database.forConfig("scalacamp")
+  private val userRepositoryId = new UserRepositoryId(db)
+  db.run(userRepositoryId.users.schema.create)
   private val username = "John Smith"
   private val address = Option("Philadelphia, PA 19101")
   private val email = "john_smith@gmail.com"

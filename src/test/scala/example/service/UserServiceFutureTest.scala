@@ -3,10 +3,13 @@ package example.service
 import example.domain.User
 import example.repository.UserRepositoryFuture
 import org.scalatest.{AsyncFlatSpec, Matchers}
+import slick.jdbc.H2Profile.api._
 
 class UserServiceFutureTest extends AsyncFlatSpec with Matchers {
 
-  private val userRepositoryFuture = new UserRepositoryFuture()
+  private val db = Database.forConfig("scalacamp")
+  private val userRepositoryFuture = new UserRepositoryFuture(db)
+  db.run(userRepositoryFuture.users.schema.create)
   private val userService = new UserServiceFuture(userRepositoryFuture)
   private val username = "John Smith"
   private val address = Option("Philadelphia, PA 19101")
