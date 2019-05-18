@@ -66,7 +66,7 @@ import akka.http.scaladsl._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
-import example.domain.User
+import example.domain.{NewUser, User}
 import example.repository.UserRepositoryFuture
 import slick.jdbc.H2Profile.api._
 import spray.json._
@@ -77,10 +77,12 @@ import scala.concurrent.duration._
 import scala.io.StdIn
 
 trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
+  implicit val newUserFormat: RootJsonFormat[NewUser] = jsonFormat3(NewUser)
   implicit val userFormat: RootJsonFormat[User] = jsonFormat4(User)
 }
 
 object UserRoutes extends JsonSupport {
+
   val db = Database.forConfig("scalacamp")
   val userRepository = new UserRepositoryFuture(db: Database)
   Await.result(db.run(userRepository.users.schema.create), 1.second)
@@ -89,7 +91,7 @@ object UserRoutes extends JsonSupport {
   val routes =
     pathPrefix("users") {
       post {
-        entity(as[User]) { user =>
+        entity(as[NewUser]) { user =>
           complete(userRepository.registerUser(user.username, user.address, user.email))
         }
       } ~
