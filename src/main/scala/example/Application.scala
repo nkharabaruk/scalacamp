@@ -63,58 +63,29 @@ package example
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl._
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
-import example.domain.{NewUser, User}
 import example.repository.UserRepositoryFuture
+import example.rest.UserRoutes
 import slick.jdbc.H2Profile.api._
-import spray.json._
-
 import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
 import scala.io.StdIn
-
-trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
-  implicit val newUserFormat: RootJsonFormat[NewUser] = jsonFormat3(NewUser)
-  implicit val userFormat: RootJsonFormat[User] = jsonFormat4(User)
-}
-
-object UserRoutes extends JsonSupport {
-
-  val db = Database.forConfig("scalacamp")
-  val userRepository = new UserRepositoryFuture(db: Database)
-  Await.result(db.run(userRepository.users.schema.create), 1.second)
-  userRepository.registerUser("cam", Option("Morshyn"), "cam@email")
-
-  val routes =
-    pathPrefix("users") {
-      post {
-        entity(as[NewUser]) { user =>
-          complete(userRepository.registerUser(user.username, user.address, user.email))
-        }
-      } ~
-        get {
-          parameters("id".as[Long]) { id =>
-            complete {
-              userRepository.getById(id)
-            }
-          }
-        } ~
-        get {
-          complete(userRepository.getAll)
-        }
-    }
-}
+import scala.concurrent.duration._
 
 object Application {
+
   def main(args: Array[String]): Unit = {
     implicit val system = ActorSystem("my-system")
     implicit val materializer = ActorMaterializer()
     implicit val executionContext = system.dispatcher
 
-    val bindingFuture = Http().bindAndHandle(UserRoutes.routes, "localhost", 8080)
+    // create database
+    val db = Database.forConfig("scalacamp")
+    val userRepository = new UserRepositoryFuture(db: Database)
+    Await.result(db.run(userRepository.users.schema.create), 1.second)
+    userRepository.registerUser("cam", Option("Morshyn"), "cam@email")
+
+    val userRoutes = new UserRoutes(userRepository)
+    val bindingFuture = Http().bindAndHandle(userRoutes.routes, "localhost", 8080)
 
     println(s"Server online at http://localhost:8080/\nPress RETURN to stop...")
     StdIn.readLine() // let it run until user presses return
