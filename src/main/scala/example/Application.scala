@@ -62,14 +62,14 @@ package example
   **/
 
 import akka.actor.ActorSystem
-import akka.http.scaladsl._
+import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import example.repository.UserRepositoryFuture
 import example.rest.UserRoutes
 import slick.jdbc.H2Profile.api._
 import scala.concurrent.Await
-import scala.io.StdIn
 import scala.concurrent.duration._
+import scala.io.StdIn
 
 object Application {
 

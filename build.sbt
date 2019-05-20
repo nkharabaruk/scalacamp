@@ -13,7 +13,9 @@ lazy val root = (project in file("."))
     libraryDependencies += akkaActor,
     libraryDependencies += akkaSteam,
     libraryDependencies += akkaHttp,
-    libraryDependencies += "com.typesafe.akka" %% "akka-http-spray-json" % "10.1.8",
+    libraryDependencies += akkaHttpSprayJson,
+    libraryDependencies += akkaStreamTestKit %Test,
+    libraryDependencies += akkaHttpTestKit,
     libraryDependencies += slick,
     libraryDependencies += h2
   )
