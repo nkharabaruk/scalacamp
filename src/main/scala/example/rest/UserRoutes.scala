@@ -6,6 +6,10 @@ import example.service.UserServiceFuture
 import example.utils.Retrier
 import scala.concurrent.duration._
 
+/**
+  * Controller for routing between application endpoints.
+  * @param userService injected User Service to use business logic operations from.
+  */
 class UserRoutes(userService: UserServiceFuture) extends JsonSupport {
 
   val routes =

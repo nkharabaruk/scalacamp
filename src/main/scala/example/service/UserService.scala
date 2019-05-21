@@ -6,6 +6,12 @@ import example.domain.User
 import example.repository.UserRepository
 import example.validation.Validator._
 
+/**
+  * Manages operations with User repository adding additional business logic.
+  * @param repository the repository of the user.
+  * @param monad allows composition of dependent effectful functions
+  * @tparam F specific type of return data.
+  */
 class UserService[F[_]](repository: UserRepository[F])
                        (implicit monad: Monad[F]) {
   def registerUser(username: String, address: Option[String], email: String): F[Either[String, User]] = {

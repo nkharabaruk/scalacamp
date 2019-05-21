@@ -5,6 +5,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
+/**
+  * Unit level testing of the Retrier.
+  */
 class RetrierTest extends FlatSpec with Matchers {
 
   private val retrier = new Retrier

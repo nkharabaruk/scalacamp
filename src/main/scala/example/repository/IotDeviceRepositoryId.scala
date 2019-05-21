@@ -9,6 +9,10 @@ import slick.lifted.TableQuery
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
+/**
+  * Id implementation of the IOT Device repository.
+  * @param db the injected database to manage operations into.
+  */
 class IotDeviceRepositoryId(db: Database) extends IotDeviceRepository[Id] {
 
   lazy val iotDevices = TableQuery[IotDeviceTable]

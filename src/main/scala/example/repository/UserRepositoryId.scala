@@ -9,6 +9,10 @@ import slick.jdbc.H2Profile.api._
 import slick.lifted.TableQuery
 import scala.concurrent.Await
 
+/**
+  * Id implementation of the User repository.
+  * @param db the injected database to manage operations into.
+  */
 class UserRepositoryId(db: Database) extends UserRepository[Id] {
 
   lazy val users = TableQuery[UserTable]

@@ -5,6 +5,9 @@ import example.repository.UserRepositoryFuture
 import org.scalatest.{AsyncFlatSpec, Matchers}
 import slick.jdbc.H2Profile.api._
 
+/**
+  * Integration level testing of the User Service Future.
+  */
 class UserServiceFutureTest extends AsyncFlatSpec with Matchers {
 
   private val db = Database.forConfig("scalacamp")

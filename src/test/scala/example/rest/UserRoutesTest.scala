@@ -12,6 +12,9 @@ import spray.json._
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
+/**
+  * REST integration testing of the application routes.
+  */
 class UserRoutesTest extends WordSpec with Matchers with ScalatestRouteTest with JsonSupport {
 
   private val db = Database.forConfig("scalacamp")

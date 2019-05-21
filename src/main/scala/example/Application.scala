@@ -72,6 +72,9 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.io.StdIn
 
+/**
+  * Main entry point of the application.
+  */
 object Application {
 
   def main(args: Array[String]): Unit = {

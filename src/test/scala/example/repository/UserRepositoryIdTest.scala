@@ -1,9 +1,11 @@
 package example.repository
 
-import example.domain.User
 import org.scalatest.{FlatSpec, Matchers}
 import slick.jdbc.H2Profile.api._
 
+/**
+  * Integration level testing of the User Repository Id.
+  */
 class UserRepositoryIdTest extends FlatSpec with Matchers {
 
   private val db = Database.forConfig("scalacamp")

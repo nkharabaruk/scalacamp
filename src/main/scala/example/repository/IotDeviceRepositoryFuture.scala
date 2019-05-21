@@ -7,6 +7,11 @@ import scala.concurrent.{ExecutionContext, Future}
 import slick.jdbc.H2Profile.api._
 import slick.lifted.TableQuery
 
+/**
+  * Future implementation of the IOT Device repository.
+  * @param db the injected database to manage operations into.
+  * @param ec the scope of execution context used by the repository.
+  */
 class IotDeviceRepositoryFuture(db: Database)(implicit val ec: ExecutionContext) extends IotDeviceRepository[Future] {
 
   lazy val iotDevices = TableQuery[IotDeviceTable]

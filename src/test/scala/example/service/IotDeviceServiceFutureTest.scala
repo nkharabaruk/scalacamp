@@ -4,6 +4,9 @@ import example.repository.{IotDeviceRepositoryFuture, UserRepositoryFuture}
 import org.scalatest.{AsyncFlatSpec, Matchers}
 import slick.jdbc.H2Profile.api._
 
+/**
+  * Integration level testing of the IOT Device Service Future.
+  */
 class IotDeviceServiceFutureTest extends AsyncFlatSpec with Matchers {
 
   private val db = Database.forConfig("scalacamp")

@@ -4,6 +4,9 @@ import java.util.concurrent.ForkJoinPool
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
 
+/**
+  * Implements retrying logic for resources which should be called multiple times to retrieve better result.
+  */
 class Retrier {
 
   private implicit val executionContext: ExecutionContextExecutor = ExecutionContext.fromExecutor(new ForkJoinPool())
