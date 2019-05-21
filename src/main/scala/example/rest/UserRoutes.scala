@@ -3,10 +3,13 @@ package example.rest
 import akka.http.scaladsl.model.{HttpResponse, StatusCodes}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.ExceptionHandler
-import example.domain.NewUser
-import example.repository.UserRepositoryFuture
+import example.domain.{NewUser, User}
+import example.service.UserServiceFuture
+import example.utils.Retrier
 
-class UserRoutes(userRepository: UserRepositoryFuture) extends JsonSupport {
+import scala.concurrent.duration._
+
+class UserRoutes(userService: UserServiceFuture) extends JsonSupport {
 
   implicit def myExceptionHandler: ExceptionHandler =
     ExceptionHandler {
@@ -20,18 +23,25 @@ class UserRoutes(userRepository: UserRepositoryFuture) extends JsonSupport {
     pathPrefix("users") {
       post {
         entity(as[NewUser]) { user =>
-          complete(userRepository.registerUser(user.username, user.address, user.email))
+          complete(
+            new Retrier().retry(
+              () => userService.registerUser(user.username, user.address, user.email),
+              (a: Either[String, User]) => a.isRight,
+              List(1.second, 2.seconds, 5.seconds)
+            )
+          )
         }
       } ~
         get {
           parameters("id".as[Long]) { id =>
             complete {
-              userRepository.getById(id)
+              userService.getById(id)
             }
           }
-        } ~
-        get {
-          complete(userRepository.getAll)
         }
+      //        } ~
+      //        get {
+      //          complete(userService.getAll)
+      //        }
     }
 }
