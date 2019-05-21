@@ -8,9 +8,9 @@ import slick.jdbc.H2Profile.api._
 class UserServiceFutureTest extends AsyncFlatSpec with Matchers {
 
   private val db = Database.forConfig("scalacamp")
-  private val userRepositoryFuture = new UserRepositoryFuture(db)
-  db.run(userRepositoryFuture.users.schema.create)
-  private val userService = new UserServiceFuture(userRepositoryFuture)
+  private val userRepository = new UserRepositoryFuture(db)
+  db.run(userRepository.users.schema.create)
+  private val userService = new UserServiceFuture(userRepository)
   private val username = "John Smith"
   private val address = Option("Philadelphia, PA 19101")
   private val email = "john_smith@gmail.com"
@@ -61,6 +61,22 @@ class UserServiceFutureTest extends AsyncFlatSpec with Matchers {
   "Retrieve user with invalid id" should "return none" in {
     userService.getById(2).map { nonRegisteredUser =>
       nonRegisteredUser shouldEqual None
+    }
+  }
+
+  "Retrieve all users" should "return not empty collection" in {
+    userService.getAll.map { emptyUsers =>
+      emptyUsers.isEmpty shouldEqual true
+    }
+
+    val user = User(1, username, address, email)
+    userService.registerUser(user.username, user.address, user.email).map { registeredUser =>
+      registeredUser shouldEqual user
+    }
+
+    userService.getAll.map { allUsers =>
+      allUsers.nonEmpty shouldEqual true
+      allUsers.head shouldEqual user
     }
   }
 }

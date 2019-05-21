@@ -8,9 +8,9 @@ import slick.jdbc.H2Profile.api._
 class UserServiceIdTest extends FlatSpec with Matchers {
 
   private val db = Database.forConfig("scalacamp")
-  private val userRepositoryId = new UserRepositoryId(db)
-  db.run(userRepositoryId.users.schema.create)
-  private val userService = new UserServiceId(userRepositoryId)
+  private val userRepository = new UserRepositoryId(db)
+  db.run(userRepository.users.schema.create)
+  private val userService = new UserServiceId(userRepository)
   private val username = "John Smith"
   private val address = Option("Philadelphia, PA 19101")
   private val email = "john_smith@gmail.com"
@@ -54,5 +54,17 @@ class UserServiceIdTest extends FlatSpec with Matchers {
 
   "Retrieve user with invalid id" should "return none" in {
     userService.getById(2) shouldEqual None
+  }
+
+  "Retrieve all users" should "return not empty collection" in {
+    val usersFromEmptyDB = userService.getAll
+    usersFromEmptyDB.isEmpty shouldEqual true
+
+    val user = User(1, username, address, email)
+    userService.registerUser(user.username, user.address, user.email)
+
+    val allUsers = userService.getAll
+    allUsers.nonEmpty shouldEqual true
+    allUsers.head shouldEqual user
   }
 }

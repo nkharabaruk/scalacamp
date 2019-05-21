@@ -7,12 +7,12 @@ import slick.jdbc.H2Profile.api._
 class IotDeviceServiceIdTest extends FlatSpec with Matchers {
 
   private val db = Database.forConfig("scalacamp")
-  private val iotDeviceRepositoryId = new IotDeviceRepositoryId(db)
-  db.run(iotDeviceRepositoryId.iotDevices.schema.create)
-  private val userRepositoryId = new UserRepositoryId(db)
-  db.run(userRepositoryId.users.schema.create)
-  private val iotDeviceService = new IotDeviceServiceId(iotDeviceRepositoryId, userRepositoryId)
-  private val userService = new UserServiceId(userRepositoryId)
+  private val iotDeviceRepository = new IotDeviceRepositoryId(db)
+  db.run(iotDeviceRepository.iotDevices.schema.create)
+  private val userRepository = new UserRepositoryId(db)
+  db.run(userRepository.users.schema.create)
+  private val iotDeviceService = new IotDeviceServiceId(iotDeviceRepository, userRepository)
+  private val userService = new UserServiceId(userRepository)
 
   private val username = "John Smith"
   private val address = Option("Philadelphia, PA 19101")

@@ -1,14 +1,13 @@
 package example.utils
 
 import org.scalatest.{FlatSpec, Matchers}
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
 class RetrierTest extends FlatSpec with Matchers {
 
-  val retrier = new Retrier()
+  private val retrier = new Retrier
 
   "The retry method call" should "return valid result without wait" in {
     val start = System.currentTimeMillis()

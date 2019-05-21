@@ -6,7 +6,6 @@ import akka.http.scaladsl.server.ExceptionHandler
 import example.domain.{NewUser, User}
 import example.service.UserServiceFuture
 import example.utils.Retrier
-
 import scala.concurrent.duration._
 
 class UserRoutes(userService: UserServiceFuture) extends JsonSupport {
@@ -32,16 +31,15 @@ class UserRoutes(userService: UserServiceFuture) extends JsonSupport {
           )
         }
       } ~
-        get {
-          parameters("id".as[Long]) { id =>
-            complete {
-              userService.getById(id)
-            }
+      get {
+        parameters("id".as[Long]) { id =>
+          complete {
+            userService.getById(id)
           }
         }
-      //        } ~
-      //        get {
-      //          complete(userService.getAll)
-      //        }
+      } ~
+      get {
+        complete(userService.getAll)
+      }
     }
 }

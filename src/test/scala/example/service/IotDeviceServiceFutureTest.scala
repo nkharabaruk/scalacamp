@@ -7,12 +7,12 @@ import slick.jdbc.H2Profile.api._
 class IotDeviceServiceFutureTest extends AsyncFlatSpec with Matchers {
 
   private val db = Database.forConfig("scalacamp")
-  private val iotDeviceRepositoryFuture = new IotDeviceRepositoryFuture(db)
-  db.run(iotDeviceRepositoryFuture.iotDevices.schema.create)
-  private val userRepositoryFuture = new UserRepositoryFuture(db)
-  db.run(userRepositoryFuture.users.schema.create)
-  private val iotDeviceService = new IotDeviceServiceFuture(iotDeviceRepositoryFuture, userRepositoryFuture)
-  private val userService = new UserServiceFuture(userRepositoryFuture)
+  private val iotDeviceRepository = new IotDeviceRepositoryFuture(db)
+  db.run(iotDeviceRepository.iotDevices.schema.create)
+  private val userRepository = new UserRepositoryFuture(db)
+  db.run(userRepository.users.schema.create)
+  private val iotDeviceService = new IotDeviceServiceFuture(iotDeviceRepository, userRepository)
+  private val userService = new UserServiceFuture(userRepository)
 
   private val username = "John Smith"
   private val address = Option("Philadelphia, PA 19101")
