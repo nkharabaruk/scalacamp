@@ -7,4 +7,5 @@ trait IotDeviceRepository[F[_]] {
   def getById(id: Long): F[Option[IotDevice]]
   def getBySn(sn: String): F[Option[IotDevice]]
   def getByUser(userId: Long): F[Seq[IotDevice]]
+  def getAll: F[Seq[IotDevice]]
 }

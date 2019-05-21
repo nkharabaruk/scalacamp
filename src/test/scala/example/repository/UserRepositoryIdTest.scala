@@ -10,6 +10,7 @@ class UserRepositoryIdTest extends FlatSpec with Matchers {
   private val userRepository = new UserRepositoryId(db)
   db.run(userRepository.users.schema.create)
   private val username = "John Smith"
+  private val anotherUsername = "Bread Pitt"
   private val address = Option("Philadelphia, PA 19101")
   private val email = "john_smith@gmail.com"
   private val userId = 1
@@ -21,7 +22,6 @@ class UserRepositoryIdTest extends FlatSpec with Matchers {
     registeredUser.address shouldEqual address
     registeredUser.email shouldEqual email
 
-    val anotherUsername = "Bread Pitt"
     val registeredUser2 = userRepository.registerUser(anotherUsername, address, email)
     registeredUser2.id shouldEqual 2
     registeredUser2.username shouldEqual anotherUsername
@@ -62,14 +62,8 @@ class UserRepositoryIdTest extends FlatSpec with Matchers {
   }
 
   "Retrieve all users" should "return not empty collection" in {
-    val usersFromEmptyDB = userRepository.getAll
-    usersFromEmptyDB.isEmpty shouldEqual true
-
-    val user = User(1, username, address, email)
-    userRepository.registerUser(user.username, user.address, user.email)
-
     val allUsers = userRepository.getAll
     allUsers.nonEmpty shouldEqual true
-    allUsers.head shouldEqual user
+    allUsers.size shouldEqual 3
   }
 }

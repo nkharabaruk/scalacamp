@@ -27,4 +27,7 @@ class IotDeviceRepositoryFuture(db: Database)(implicit val ec: ExecutionContext)
   override def getByUser(userId: Long): Future[Seq[IotDevice]] = {
     db.run(iotDevices.filter(_.userId === userId).result)
   }
+  override def getAll: Future[Seq[IotDevice]] = {
+    db.run(iotDevices.result)
+  }
 }

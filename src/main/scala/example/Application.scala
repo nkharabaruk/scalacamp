@@ -68,7 +68,6 @@ import example.repository.UserRepositoryFuture
 import example.rest.UserRoutes
 import example.service.UserServiceFuture
 import slick.jdbc.H2Profile.api._
-
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.io.StdIn
@@ -84,7 +83,6 @@ object Application {
     val db = Database.forConfig("scalacamp")
     val userRepository = new UserRepositoryFuture(db: Database)
     Await.result(db.run(userRepository.users.schema.create), 1.second)
-    userRepository.registerUser("cam", Option("Morshyn"), "cam@email")
 
     val userRoutes = new UserRoutes(new UserServiceFuture(userRepository))
     val bindingFuture = Http().bindAndHandle(userRoutes.routes, "localhost", 8080)

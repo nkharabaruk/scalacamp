@@ -11,6 +11,7 @@ class IotDeviceServiceFutureTest extends AsyncFlatSpec with Matchers {
   db.run(iotDeviceRepository.iotDevices.schema.create)
   private val userRepository = new UserRepositoryFuture(db)
   db.run(userRepository.users.schema.create)
+  userRepository.registerUser("Homer Simpson", Option("Springfield"), "homer_simpson@email.com")
   private val iotDeviceService = new IotDeviceServiceFuture(iotDeviceRepository, userRepository)
   private val userService = new UserServiceFuture(userRepository)
 
@@ -22,9 +23,10 @@ class IotDeviceServiceFutureTest extends AsyncFlatSpec with Matchers {
   private val serialNumber = "EA2700"
 
   "Register iot device with not existed user" should "return error message" in {
-    iotDeviceService.registerDevice(userId, serialNumber).map { nonRegisteredDevice =>
+    val anotherUserId = 2
+    iotDeviceService.registerDevice(anotherUserId, serialNumber).map { nonRegisteredDevice =>
       nonRegisteredDevice.isLeft shouldEqual true
-      nonRegisteredDevice shouldEqual Left(s"User with id $userId not found.")
+      nonRegisteredDevice shouldEqual Left(s"User with id $anotherUserId not found.")
     }
   }
 

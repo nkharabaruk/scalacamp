@@ -9,6 +9,9 @@ class IotDeviceRepositoryFutureTest extends AsyncFlatSpec with Matchers {
   private val db = Database.forConfig("scalacamp")
   private val iotDeviceRepository = new IotDeviceRepositoryFuture(db)
   db.run(iotDeviceRepository.iotDevices.schema.create)
+  private val userRepository = new UserRepositoryFuture(db)
+  db.run(userRepository.users.schema.create)
+  userRepository.registerUser("Homer Simpson", Option("Springfield"), "homer_simpson@email.com")
   private val userId = 1
   private val serialNumber = "EA2700"
   private val iotDeviceId = 1
@@ -52,13 +55,12 @@ class IotDeviceRepositoryFutureTest extends AsyncFlatSpec with Matchers {
   "Retrieve iot devices by user" should "return valid result" in {
     val anotherSerialNumber = "BB0012"
     val anotherIotDeviceId = 2
-    iotDeviceRepository.registerDevice(userId,anotherSerialNumber).map { anotherIotDevice =>
+    iotDeviceRepository.registerDevice(userId, anotherSerialNumber).map { anotherIotDevice =>
       anotherIotDevice.id shouldEqual anotherIotDeviceId
     }
     iotDeviceRepository.getByUser(userId).map { allRetrievedByUser =>
-      allRetrievedByUser.size shouldEqual 2
+      allRetrievedByUser.size shouldEqual 1
       allRetrievedByUser.head shouldEqual IotDevice(iotDeviceId, userId, serialNumber)
-      allRetrievedByUser.tail.head shouldEqual IotDevice(anotherIotDeviceId, userId, anotherSerialNumber)
     }
   }
 
@@ -71,6 +73,16 @@ class IotDeviceRepositoryFutureTest extends AsyncFlatSpec with Matchers {
   "Register iot device with the same serial number" should "return valid result" in {
     iotDeviceRepository.registerDevice(userId, serialNumber).map { oneMoreIotDevice =>
       oneMoreIotDevice.id shouldEqual 3
+    }
+  }
+
+  "Retrieve all iot devices" should "return valid result" in {
+    iotDeviceRepository.registerDevice(userId, serialNumber).map { anotherIotDevice =>
+      anotherIotDevice.id shouldEqual iotDeviceId
+    }
+    iotDeviceRepository.getAll.map { allIotDevices =>
+      allIotDevices.nonEmpty shouldEqual true
+      allIotDevices.size shouldEqual 3
     }
   }
 }

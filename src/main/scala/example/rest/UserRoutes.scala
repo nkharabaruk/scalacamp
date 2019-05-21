@@ -1,22 +1,12 @@
 package example.rest
 
-import akka.http.scaladsl.model.{HttpResponse, StatusCodes}
 import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.ExceptionHandler
 import example.domain.{NewUser, User}
 import example.service.UserServiceFuture
 import example.utils.Retrier
 import scala.concurrent.duration._
 
 class UserRoutes(userService: UserServiceFuture) extends JsonSupport {
-
-  implicit def myExceptionHandler: ExceptionHandler =
-    ExceptionHandler {
-      case e: Throwable =>
-        println(e.getMessage)
-        println(e.getStackTrace)
-        complete(HttpResponse(StatusCodes.BadRequest, entity = e.getMessage))
-    }
 
   val routes =
     pathPrefix("users") {

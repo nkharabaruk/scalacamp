@@ -24,7 +24,7 @@ class UserRoutesTest extends WordSpec with Matchers with ScalatestRouteTest with
   private val userRoutes = new UserRoutes(userService).routes
   private val userJson: JsValue = user2.toJson
   // for test with retry
-  implicit def default(implicit system: ActorSystem) = RouteTestTimeout(10.seconds)
+  private implicit def default(implicit system: ActorSystem) = RouteTestTimeout(10.seconds)
 
   "The service" should {
     "return predefined users" in {

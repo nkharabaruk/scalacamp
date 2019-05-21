@@ -57,14 +57,8 @@ class UserServiceIdTest extends FlatSpec with Matchers {
   }
 
   "Retrieve all users" should "return not empty collection" in {
-    val usersFromEmptyDB = userService.getAll
-    usersFromEmptyDB.isEmpty shouldEqual true
-
-    val user = User(1, username, address, email)
-    userService.registerUser(user.username, user.address, user.email)
-
     val allUsers = userService.getAll
     allUsers.nonEmpty shouldEqual true
-    allUsers.head shouldEqual user
+    allUsers.size shouldEqual 1
   }
 }

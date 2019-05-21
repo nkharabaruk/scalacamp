@@ -10,6 +10,7 @@ class UserRepositoryFutureTest extends AsyncFlatSpec with Matchers {
   private val userRepository = new UserRepositoryFuture(db)
   db.run(userRepository.users.schema.create)
   private val username = "John Smith"
+  private val anotherUsername = "Bread Pitt"
   private val address = Option("Philadelphia, PA 19101")
   private val email = "john_smith@gmail.com"
   private val userId = 1
@@ -22,7 +23,6 @@ class UserRepositoryFutureTest extends AsyncFlatSpec with Matchers {
       registeredUser.email shouldEqual email
     }
 
-    val anotherUsername = "Bread Pitt"
     userRepository.registerUser(anotherUsername, address, email).map { registeredUser =>
       registeredUser.id shouldEqual 2
       registeredUser.username shouldEqual anotherUsername

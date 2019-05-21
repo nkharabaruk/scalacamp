@@ -45,7 +45,7 @@ class IotDeviceRepositoryIdTest extends FlatSpec with Matchers {
   "Retrieve iot devices by user" should "return valid result" in {
     val anotherSN = "BB0012"
     val anotherIotDeviceId = 2
-    val anotherIotDevice = iotDeviceRepository.registerDevice(userId,anotherSN)
+    val anotherIotDevice = iotDeviceRepository.registerDevice(userId, anotherSN)
     anotherIotDevice.id shouldEqual anotherIotDeviceId
 
     val allRetrievedByUser = iotDeviceRepository.getByUser(userId)
@@ -63,5 +63,11 @@ class IotDeviceRepositoryIdTest extends FlatSpec with Matchers {
     iotDevice.id shouldEqual 3
     iotDevice.sn shouldEqual serialNumber
     iotDevice.userId shouldEqual 1
+  }
+
+  "Retrieve all iot devices" should "return valid result" in {
+    val allIotDevices = iotDeviceRepository.getAll
+    allIotDevices.nonEmpty shouldEqual true
+    allIotDevices.size shouldEqual 3
   }
 }
