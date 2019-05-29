@@ -3,6 +3,9 @@ package example.validation
 import example.validation.Validator._
 import org.scalatest.{FlatSpec, Matchers}
 
+/**
+  * Unit level testing of the Validator.
+  */
 class ValidatorTest extends FlatSpec with Matchers {
 
   "The int validate method calls" should "return valid result" in {

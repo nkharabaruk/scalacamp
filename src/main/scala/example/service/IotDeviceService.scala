@@ -5,6 +5,13 @@ import cats.implicits._
 import example.domain.IotDevice
 import example.repository.{IotDeviceRepository, UserRepository}
 
+/**
+  * Manages operations with repository adding addition business logic.
+  * @param repository the repository of the IOT Device.
+  * @param userRepository the repository of the User.
+  * @param monad allows composition of dependent effectful functions
+  * @tparam F specific return type of the function.
+  */
 class IotDeviceService[F[_]](repository: IotDeviceRepository[F],
                              userRepository: UserRepository[F])
                             (implicit monad: Monad[F]) {

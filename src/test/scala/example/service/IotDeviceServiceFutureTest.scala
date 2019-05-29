@@ -2,32 +2,45 @@ package example.service
 
 import example.repository.{IotDeviceRepositoryFuture, UserRepositoryFuture}
 import org.scalatest.{AsyncFlatSpec, Matchers}
+import slick.jdbc.H2Profile.api._
 
+/**
+  * Integration level testing of the IOT Device Service Future.
+  */
 class IotDeviceServiceFutureTest extends AsyncFlatSpec with Matchers {
 
-  val iotDeviceRepositoryFuture = new IotDeviceRepositoryFuture()
-  val userRepositoryFuture = new UserRepositoryFuture()
-  val iotDeviceService = new IotDeviceServiceFuture(iotDeviceRepositoryFuture, userRepositoryFuture)
-  val userService = new UserServiceFuture(userRepositoryFuture)
+  private val db = Database.forConfig("scalacamp")
+  private val iotDeviceRepository = new IotDeviceRepositoryFuture(db)
+  db.run(iotDeviceRepository.iotDevices.schema.create)
+  private val userRepository = new UserRepositoryFuture(db)
+  db.run(userRepository.users.schema.create)
+  userRepository.registerUser("Homer Simpson", Option("Springfield"), "homer_simpson@email.com")
+  private val iotDeviceService = new IotDeviceServiceFuture(iotDeviceRepository, userRepository)
+  private val userService = new UserServiceFuture(userRepository)
 
-  val username = "John Smith"
-  val userId = 1
-  val iotDeviceId = 1
-  val serialNumber = "EA2700"
+  private val username = "John Smith"
+  private val address = Option("Philadelphia, PA 19101")
+  private val email = "john_smith@gmail.com"
+  private val userId = 1
+  private val iotDeviceId = 1
+  private val serialNumber = "EA2700"
 
   "Register iot device with not existed user" should "return error message" in {
-    iotDeviceService.registerDevice(userId, serialNumber).map { nonRegisteredDevice =>
+    val anotherUserId = 2
+    iotDeviceService.registerDevice(anotherUserId, serialNumber).map { nonRegisteredDevice =>
       nonRegisteredDevice.isLeft shouldEqual true
-      nonRegisteredDevice shouldEqual Left(s"User with id $userId not found.")
+      nonRegisteredDevice shouldEqual Left(s"User with id $anotherUserId not found.")
     }
   }
 
   "Register iot device" should "return valid result" in {
-    userService.registerUser(username).map { registeredUser =>
+    userService.registerUser(username, address, email).map { registeredUser =>
       registeredUser.isRight shouldEqual true
       val existingUser = registeredUser.right.get
       existingUser.id shouldEqual userId
       existingUser.username shouldEqual username
+      existingUser.address shouldEqual address
+      existingUser.email shouldEqual email
     }
     iotDeviceService.registerDevice(userId, serialNumber).map { registeredDevice =>
       registeredDevice.isRight shouldEqual true
